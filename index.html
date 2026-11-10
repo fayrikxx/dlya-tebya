@@ -206,7 +206,6 @@ body{
 }
 </style>
 
-<!-- shared gradients for every cat -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <defs>
     <linearGradient id="cFur" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6b46c"/><stop offset="1" stop-color="#d4823c"/></linearGradient>
@@ -228,7 +227,7 @@ body{
 
 <div id="app">
 
-  <!-- 1. Котик на входе -->
+
   <section class="stage" id="gate">
     <div class="bubble down" id="gateSay" aria-live="polite">Куда? Сначала гладить</div>
     <button class="cat-btn" id="gateCatBtn" type="button" aria-label="Погладить котика">
@@ -238,7 +237,7 @@ body{
     <button class="btn btn-yes" id="goBtn" type="button" hidden>Пойдём</button>
   </section>
 
-  <!-- 2. Тест -->
+
   <section class="stage" id="quiz" hidden>
     <div class="guide">
       <span class="cat-slot cat-sm" data-mood="neutral" id="quizCat" aria-hidden="true"></span>
@@ -259,7 +258,7 @@ body{
     </div>
   </section>
 
-  <!-- 3. Поймай лепестки -->
+
   <section class="stage" id="catch" hidden>
     <div class="guide">
       <span class="cat-slot cat-sm" data-mood="neutral" id="catchCat" aria-hidden="true"></span>
@@ -273,7 +272,7 @@ body{
     </div>
   </section>
 
-  <!-- 4. Звёзды -->
+
   <section class="stage" id="stars" hidden>
     <div class="guide">
       <span class="cat-slot cat-sm" data-mood="neutral" id="starsCat" aria-hidden="true"></span>
@@ -290,7 +289,6 @@ body{
     </div>
   </section>
 
-  <!-- 5. Скретч -->
   <section class="stage" id="scratch" hidden>
     <div class="guide">
       <span class="cat-slot cat-sm" data-mood="neutral" id="scratchCat" aria-hidden="true"></span>
@@ -309,7 +307,7 @@ body{
     </div>
   </section>
 
-  <!-- 6. Признание -->
+
   <section class="stage" id="petals" hidden>
     <h2 class="sr-only">Я тут хотел тебе кое-что сказать. Я тебя люблю.</h2>
     <div class="dock">
@@ -350,7 +348,6 @@ body{
   const $ = (s) => document.querySelector(s);
   const clamp = (v) => Math.max(0, Math.min(1, v));
 
-  /* ---------- Котик ---------- */
   const STRIPE = '#b5642a', LINE = '#3b2414';
   const CAT = `
 <svg class="cat" viewBox="0 0 240 306" aria-hidden="true">
@@ -494,7 +491,6 @@ body{
     setTimeout(() => h.remove(), 1200);
   }
 
-  /* ---------- 1. Вход ---------- */
   const gateCat = catOf('gateCat'), gateCatBtn = $('#gateCatBtn'), gateSay = $('#gateSay');
   const goBtn = $('#goBtn'), gateHint = $('#gateHint');
   const GATE = [
@@ -504,7 +500,7 @@ body{
     'Ладно, уговорила. Иди за мной'
   ];
   let pets = 0, gateHintT = 0;
-  /* the hint only shows up if she hasn't figured out the cat on her own */
+
   function armGateHint(){
     clearTimeout(gateHintT);
     gateHint.hidden = false; gateHint.classList.add('off');
@@ -524,7 +520,6 @@ body{
   gateCatBtn.addEventListener('click', pet);
   goBtn.addEventListener('click', () => show('quiz'));
 
-  /* ---------- 2. Тест ---------- */
   const Q = [
     { q: 'Кто кого копирует?',
       opts: ['Он меня', 'Я его', 'Это телепатия'],
@@ -561,7 +556,7 @@ body{
     const q = Q[qi];
     qNum.textContent = (qi + 1) + ' / ' + Q.length;
     qNum.setAttribute('aria-label', 'Вопрос ' + (qi + 1) + ' из ' + Q.length);
-    /* each question is a fresh note, stuck on a little differently */
+
     qCard.classList.toggle('alt', qi % 2 === 1);
     qCard.classList.remove('flip'); void qCard.offsetWidth; qCard.classList.add('flip');
     qText.textContent = q.q;
@@ -590,8 +585,7 @@ body{
     else { show('catch'); startCatch(); }
   });
 
-  /* Rose petal sprites: heart-shaped petal, velvet gradient, veins, darker curled rim, soft shadow.
-     Drawn once per shade, then stamped with drawImage so hundreds of petals stay smooth. */
+
   const PETAL_SHADES = [
     ['#e5354f', '#a90f28', '#4f0410'],
     ['#f04a62', '#bb1631', '#5c0613'],
@@ -653,7 +647,6 @@ body{
     setTimeout(() => h.remove(), 1200);
   }
 
-  /* ---------- 3. Поймай лепестки ---------- */
   const GOAL = 10;
   const gcv = $('#catchCanvas'), gctx = gcv.getContext('2d');
   const catchCount = $('#catchCount'), catchSay = $('#catchSay'), catchCat = catOf('catchCat');
@@ -721,8 +714,6 @@ body{
       catchSay.textContent = 'Пять. Как в букете';
     }
   });
-
-  /* ---------- 4. Звёзды ---------- */
   const STARS = [[32, 22], [16, 40], [30, 64], [50, 84], [70, 64], [84, 40], [68, 22]];
   const LIKES = [
     'Как ты смущаешься и делаешь вид, что нет',
@@ -777,7 +768,6 @@ body{
   }
   starsNext.addEventListener('click', () => { show('scratch'); startScratch(); });
 
-  /* ---------- 5. Скретч ---------- */
   const scv = $('#scratchCanvas'), sctx = scv.getContext('2d', { willReadFrequently: true });
   const scratchBox = $('#scratchBox'), scratchNext = $('#scratchNext'), scratchSay = $('#scratchSay'), scratchCat = catOf('scratchCat');
   let sW = 0, sH = 0, scratching = false, sLast = null, sDone = false;
@@ -849,7 +839,6 @@ body{
     if (!$('#scratch').hidden && !sDone) paintCover();
   });
 
-  /* ---------- 3. Лепестки ---------- */
   const cv = $('#petalCanvas'), ctx = cv.getContext('2d');
   const pickC = () => (Math.random() * PETAL_SHADES.length) | 0;
   const flap = (t, ph, sp) => 0.32 + 0.68 * Math.abs(Math.cos(t * sp + ph));
@@ -892,7 +881,6 @@ body{
     }
     ctx.restore();
   }
-  /* shapes are drawn offscreen once, then sampled on a grid; each grid hit becomes a petal's home */
   function raster(draw){
     const off = document.createElement('canvas'); off.width = W; off.height = H;
     const o = off.getContext('2d', { willReadFrequently: true });
@@ -1080,7 +1068,6 @@ body{
     else if (state === 'heart'){ parts = []; toText(t, true); toHeart(t, true); }
   });
 
-  /* ---------- 4. «А ты?» ---------- */
   const ask = $('#ask'), finale = $('#finale'), yesBtn = $('#yesBtn'), noBtn = $('#noBtn');
   const NO = ['Рано', 'Мечтай', 'Не вип-пасс', 'Тише, тише 🤫', 'Это аванс', 'Время покажет', 'Со временем)', 'Может быть...', 'Ну ладно...'];
   const MODALS = {
@@ -1158,7 +1145,6 @@ body{
     toHeart((performance.now() - t0) / 1000, false);
   }
 
-  /* ---------- Окно ---------- */
   const modal = $('#modal'), mTitle = $('#mTitle'), mBody = $('#mBody'), mOk = $('#mOk'), mAlt = $('#mAlt');
   let onClose = null;
   function openModal(m, cb){
@@ -1178,7 +1164,6 @@ body{
   mAlt.addEventListener('click', closeModal);
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.hidden) closeModal(); });
 
-  /* ---------- Заново ---------- */
   $('#again').addEventListener('click', () => {
     running = false; gRun = false; parts = []; ambient = []; state = 'idle'; tFade = -1;
     clearTimeout(askTimer); askTimer = 0;
