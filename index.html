@@ -1,0 +1,1204 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Для злой заи</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bad+Script&family=Nunito:wght@400;700;800;900&display=swap">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+</head>
+<body>
+<style>
+/* Layout: one narrow centered column in a dark room; everything he made for her is a paper object (speech bubbles, a taped note, a ticket); a fixed canvas behind carries the rose petals */
+:root{
+  --bg:#2a1324;
+  --bg-glow:#4d1f40;
+  --card:#3a1b33;
+  --line:rgba(251,238,230,.14);
+  --fg:#fbeee6;
+  --muted:#d6b6c4;
+  --paper:#fff4ec;
+  --ink:#2a1324;
+  --ink-soft:rgba(42,19,36,.62);
+  --ink-line:rgba(42,19,36,.22);
+  --tape:rgba(255,143,163,.62);
+  --rose:#e23e57;
+  --rose-deep:#b3173a;
+  --blush:#ff8fa3;
+  --display:"Bad Script","Segoe Script","Bradley Hand",cursive;
+  --body:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+[hidden]{display:none!important}
+html{background-color:var(--bg)}
+html,body{height:100%}
+body{
+  background-color:var(--bg);
+  background-image:radial-gradient(120% 70% at 50% 0%,var(--bg-glow),var(--bg) 62%);
+  background-repeat:no-repeat;
+  background-attachment:fixed;
+  color:var(--fg);
+  font-family:var(--body);
+  font-size:16px;
+  line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  overflow-x:hidden;
+  -webkit-tap-highlight-color:transparent;
+}
+#petalCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity .4s}
+#petalCanvas.on{opacity:1}
+#app{position:relative;z-index:1;box-sizing:border-box;max-width:460px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;padding-block:24px}
+.stage{flex:1;display:flex;flex-direction:column;justify-content:center;gap:20px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* cat */
+.cat{display:block;width:100%;height:auto;overflow:visible;--g:0;--n:1;--h:0;--s:0}
+.cat.mood-grumpy{--g:1;--n:0;--h:0;--s:0}
+.cat.mood-neutral{--g:0;--n:1;--h:0;--s:0}
+.cat.mood-happy{--g:0;--n:0;--h:1;--s:0}
+.cat.mood-sad{--g:0;--n:0;--h:0;--s:1}
+.cat .m{transition:opacity .3s}
+.cat .tailTip{transform-box:view-box;transform-origin:90px 298px;animation:sway 3.6s ease-in-out infinite}
+@keyframes sway{50%{transform:rotate(9deg)}}
+.cat .eye{transform-box:fill-box;transform-origin:center;transition:transform .09s}
+.cat.blink .eye{transform:scaleY(.08)}
+.cat .earR{transform-box:fill-box;transform-origin:30% 100%}
+.cat.twitch .earR{animation:twitch .35s ease}
+@keyframes twitch{40%{transform:rotate(10deg)}}
+
+/* speech bubble */
+.bubble{background:var(--paper);color:var(--ink);border-radius:18px;padding:12px 16px;font-weight:800;line-height:1.35;position:relative;text-wrap:pretty}
+.bubble.down::after{content:"";position:absolute;left:50%;bottom:-9px;width:18px;height:18px;background:var(--paper);transform:translateX(-50%) rotate(45deg);border-radius:3px}
+.bubble.left::after{content:"";position:absolute;left:-7px;top:22px;width:16px;height:16px;background:var(--paper);transform:rotate(45deg);border-radius:3px}
+
+/* gate */
+#gate{align-items:center;text-align:center}
+#gate .bubble{max-width:320px;font-size:1.05rem}
+.cat-btn{background:none;border:0;padding:0;cursor:pointer;border-radius:24px;width:min(210px,56vw)}
+.caption{color:var(--muted);font-size:.92rem;margin:0}
+.caption,.play-hint{transition:opacity .5s}
+.off{opacity:0}
+.wiggle{animation:wiggle .5s ease}
+@keyframes wiggle{20%{transform:rotate(-5deg)}40%{transform:rotate(4deg)}60%{transform:rotate(-3deg)}80%{transform:rotate(1deg)}}
+.float-heart{position:fixed;z-index:5;color:var(--rose);font-size:28px;pointer-events:none;animation:floatUp 1.1s ease-out forwards}
+@keyframes floatUp{to{transform:translateY(-80px) scale(1.4);opacity:0}}
+
+/* buttons */
+.btn{font:inherit;font-weight:800;border-radius:999px;padding:14px 24px;cursor:pointer;border:2px solid transparent;transition:transform .15s,background .2s,border-color .2s;line-height:1.2}
+.btn:active{transform:scale(.97)}
+.btn-yes{background:var(--rose);color:#fff}
+.btn-yes:hover{background:var(--rose-deep)}
+.btn-ghost{background:transparent;color:var(--fg);border-color:var(--line)}
+.btn-ghost:hover{border-color:var(--muted)}
+.btn-no{background:transparent;color:var(--muted);border-color:var(--line)}
+:focus-visible{outline:3px solid var(--blush);outline-offset:3px}
+
+/* guide row */
+.guide{display:flex;align-items:flex-end;gap:10px}
+.cat-sm{width:74px;flex:none}
+.guide .bubble{flex:1;min-width:0;font-size:.98rem;margin-bottom:22px}
+
+/* quiz: a note taped up in the dark */
+.note{position:relative;background:var(--paper);color:var(--ink);border-radius:5px;padding:32px 22px 22px;display:flex;flex-direction:column;gap:16px;rotate:-1.2deg;box-shadow:0 16px 28px rgba(0,0,0,.42)}
+.note::before{content:"";position:absolute;top:-12px;left:50%;width:96px;height:26px;margin-left:-48px;rotate:-3deg;background:var(--tape)}
+.note.alt{rotate:1deg}
+.note.alt::before{rotate:4deg;margin-left:-22px}
+.note.flip{animation:rise .4s ease both}
+.note h1,.note h2{font-family:var(--display);font-weight:400;font-size:2rem;line-height:1.25;margin:0;text-wrap:balance}
+.note-num{position:absolute;top:12px;right:16px;margin:0;font-family:var(--display);font-size:1.2rem;line-height:1;color:var(--ink-soft)}
+.meta{color:var(--ink-soft);margin:0;font-size:.95rem;font-weight:700}
+.note > .btn{align-self:flex-start}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{font:inherit;font-weight:700;text-align:left;color:var(--ink);background:transparent;border:1.5px solid var(--ink-line);border-radius:10px;padding:13px 16px;cursor:pointer;transition:border-color .2s,background .2s}
+.opt:hover:not(:disabled){border-color:var(--rose)}
+.opt:disabled{cursor:default;opacity:.5}
+.opt.picked{background:var(--rose);border-color:var(--rose);color:#fff;opacity:1}
+
+/* open play area shared by the mini-games (no boxes) */
+.play{display:flex;flex-direction:column;align-items:center;gap:14px}
+.play > .btn{width:100%;max-width:340px}
+.play-hint{color:var(--muted);font-size:.9rem;margin:0;text-align:center}
+.meter{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.meter i{display:block;width:16px;height:11px;border-radius:50%;border:1.5px solid rgba(255,143,163,.55);transform:rotate(-25deg);transition:background .25s,border-color .25s}
+.meter i.on{background:var(--rose);border-color:var(--rose);animation:pip .35s ease}
+@keyframes pip{50%{transform:rotate(-25deg) scale(1.6)}}
+.meter.dots i{width:9px;height:9px;transform:none;border-color:rgba(255,244,236,.4)}
+.meter.dots i.on{background:var(--paper);border-color:var(--paper);box-shadow:0 0 8px rgba(255,143,163,.9);animation:none}
+
+/* catch game */
+.field{display:block;width:100%;height:min(54vh,430px);touch-action:manipulation;cursor:pointer;
+  -webkit-mask-image:linear-gradient(to bottom,transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(to bottom,transparent,#000 14%,#000 86%,transparent)}
+
+/* stars */
+.sky{position:relative;width:100%;height:min(48vh,360px);
+  background-image:radial-gradient(circle at 20% 30%,rgba(255,255,255,.55) 0 1px,transparent 1.6px),radial-gradient(circle at 70% 15%,rgba(255,255,255,.4) 0 1px,transparent 1.6px),radial-gradient(circle at 85% 75%,rgba(255,255,255,.35) 0 1px,transparent 1.6px),radial-gradient(circle at 40% 80%,rgba(255,255,255,.3) 0 1px,transparent 1.6px);
+  background-size:90px 90px,130px 130px,110px 110px,150px 150px;
+  -webkit-mask-image:radial-gradient(ellipse at center,#000 55%,transparent 85%);mask-image:radial-gradient(ellipse at center,#000 55%,transparent 85%)}
+.sky .star{-webkit-mask-image:none}
+.sky-lines{position:absolute;inset:0;width:100%;height:100%}
+.sky-lines path{fill:none;stroke:rgba(255,183,197,.8);stroke-width:.6;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 2.2s ease}
+.sky-lines path.drawn{stroke-dashoffset:0}
+.star{position:absolute;width:48px;height:48px;margin:-24px 0 0 -24px;padding:10px;background:none;border:0;border-radius:50%;cursor:pointer;animation:twinkle 2.6s ease-in-out infinite}
+.star svg{display:block;width:100%;height:100%;fill:#f7d9e0;opacity:.55;transition:opacity .3s,transform .3s;filter:drop-shadow(0 0 4px rgba(255,180,200,.6))}
+.star.on{animation:none}
+.star.on svg{opacity:1;fill:#fff4ec;transform:scale(1.35);filter:drop-shadow(0 0 10px rgba(255,143,163,.95))}
+@keyframes twinkle{50%{transform:scale(.85);opacity:.7}}
+.star-text{font-family:var(--display);font-weight:400;font-size:2rem;line-height:1.25;margin:0;text-align:center;min-height:2.5em;text-wrap:balance;color:var(--paper);text-shadow:0 0 18px rgba(226,62,87,.55)}
+.star-text.pop{animation:rise .5s ease both}
+
+/* scratch: a lottery ticket */
+.ticket-wrap{width:100%;max-width:360px;margin-block:8px;transform:rotate(-2deg);filter:drop-shadow(0 18px 30px rgba(0,0,0,.45))}
+.ticket{position:relative;color:var(--ink);
+  background-color:var(--paper);
+  background-image:repeating-linear-gradient(135deg,rgba(226,62,87,.06) 0 10px,transparent 10px 20px);
+  border-radius:18px;padding:18px 22px;display:flex;flex-direction:column;gap:12px;
+  -webkit-mask:radial-gradient(circle 13px at 0 50%,transparent 97%,#000) left/51% 100% no-repeat,radial-gradient(circle 13px at 100% 50%,transparent 97%,#000) right/51% 100% no-repeat;
+  mask:radial-gradient(circle 13px at 0 50%,transparent 97%,#000) left/51% 100% no-repeat,radial-gradient(circle 13px at 100% 50%,transparent 97%,#000) right/51% 100% no-repeat}
+.ticket::before{content:"";position:absolute;inset:8px;border:1.5px dashed rgba(42,19,36,.25);border-radius:12px;pointer-events:none}
+.ticket-head,.ticket-foot{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:rgba(42,19,36,.6)}
+.ticket-title{font-family:var(--display);font-weight:400;font-size:1.8rem;letter-spacing:0;text-transform:none;color:var(--rose-deep)}
+.ticket-foot{justify-content:center}
+.scratch{position:relative;height:150px;border-radius:12px;overflow:hidden;background:#fffaf5;box-shadow:inset 0 0 0 1.5px rgba(42,19,36,.12);display:grid;place-items:center}
+.scratch-msg{font-family:var(--display);font-weight:400;font-size:2.1rem;line-height:1.2;color:var(--ink);text-align:center;margin:0;padding:0 14px;text-wrap:balance}
+#scratchCanvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:pointer;transition:opacity .5s}
+
+/* petals stage */
+#petals{justify-content:flex-end;padding-bottom:16px}
+.dock{display:flex;flex-direction:column;align-items:center}
+.cat-dock{width:96px;position:relative;z-index:2;margin-bottom:-12px}
+.panel{position:relative;box-sizing:border-box;width:100%;background:var(--paper);color:var(--ink);border-radius:5px;padding:28px 20px 20px;display:flex;flex-direction:column;gap:14px;text-align:center;rotate:1deg;box-shadow:0 16px 28px rgba(0,0,0,.42)}
+.in{animation:rise .6s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.big-q{font-family:var(--display);font-size:3rem;line-height:1.15;margin:0}
+.choices{display:flex;flex-direction:column;gap:10px;align-items:center}
+.choices .btn{width:100%;max-width:340px}
+.panel .btn-no{color:var(--ink-soft);border-color:var(--ink-line)}
+.hint{color:var(--ink-soft);font-size:.85rem;margin:0}
+.finale{width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding-top:24px}
+.finale-title{font-family:var(--display);font-size:3rem;line-height:1.2;margin:0;color:var(--paper);text-shadow:0 0 18px rgba(226,62,87,.55)}
+.finale-note{margin:0;color:var(--muted);font-size:.95rem;font-weight:700;max-width:30ch;text-wrap:balance}
+.again{font:inherit;font-size:.9rem;font-weight:700;color:var(--muted);background:none;border:0;border-radius:8px;padding:10px 12px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.again:hover{color:var(--fg)}
+
+/* the «Нет» button falls apart into petals and a second «Я тебя тоже люблю» blooms from them */
+.swap-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:6;pointer-events:none}
+.btn.going{animation:btnGo .45s ease-in forwards;pointer-events:none}
+@keyframes btnGo{15%{transform:translateX(-4px) rotate(-1.5deg)}30%{transform:translateX(4px) rotate(1.5deg)}45%{transform:translateX(-2px)}100%{transform:scale(.55);opacity:0;filter:blur(3px)}}
+.btn.coming{animation:btnBloom .75s cubic-bezier(.2,1.5,.4,1) both,btnGlow 1.1s ease-out .35s both;pointer-events:none}
+@keyframes btnBloom{from{transform:scale(.35);opacity:0}55%{opacity:1}to{transform:none;opacity:1}}
+@keyframes btnGlow{from{box-shadow:0 0 0 0 rgba(226,62,87,.6)}to{box-shadow:0 0 0 18px rgba(226,62,87,0)}}
+
+/* modal */
+.modal{position:fixed;inset:0;z-index:10;background:rgba(20,8,16,.6);display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.modal-box{background:var(--paper);color:var(--ink);border-radius:20px;padding:22px 20px;max-width:330px;width:100%;text-align:center;display:flex;flex-direction:column;gap:10px;animation:pop .25s ease both}
+@keyframes pop{from{transform:scale(.9);opacity:0}to{transform:none;opacity:1}}
+.modal-box h3{margin:0;font-family:var(--display);font-weight:400;font-size:2rem;line-height:1.2}
+.modal-box p{margin:0;font-weight:700}
+.modal-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:6px}
+.modal-actions .btn-ghost{color:var(--ink);border-color:rgba(42,19,36,.2)}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+
+<!-- shared gradients for every cat -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="cFur" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6b46c"/><stop offset="1" stop-color="#d4823c"/></linearGradient>
+    <radialGradient id="cHead" cx=".5" cy=".4" r=".62"><stop offset="0" stop-color="#f9c584"/><stop offset=".7" stop-color="#eda057"/><stop offset="1" stop-color="#d27e36"/></radialGradient>
+    <radialGradient id="cBody" cx=".5" cy=".25" r=".8"><stop offset="0" stop-color="#f3ae63"/><stop offset="1" stop-color="#c06c2a"/></radialGradient>
+    <linearGradient id="cEar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d97e80"/><stop offset="1" stop-color="#f6c3b4"/></linearGradient>
+    <radialGradient id="cIris" cx=".5" cy=".5" r=".55"><stop offset="0" stop-color="#ecd96e"/><stop offset=".55" stop-color="#a6c04c"/><stop offset="1" stop-color="#5b7628"/></radialGradient>
+    <linearGradient id="cCream" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff8ef"/><stop offset="1" stop-color="#eed6bf"/></linearGradient>
+    <radialGradient id="cNose" cx=".5" cy=".3" r=".7"><stop offset="0" stop-color="#f4aaa8"/><stop offset="1" stop-color="#c46670"/></radialGradient>
+    <linearGradient id="cSock" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff8ef" stop-opacity="0"/><stop offset=".45" stop-color="#fff8ef"/><stop offset="1" stop-color="#ead1b9"/></linearGradient>
+    <clipPath id="eLn" clipPathUnits="userSpaceOnUse"><path d="M80 111 Q95 95 112 109 Q97 123 80 111 Z"/></clipPath>
+    <clipPath id="eRn" clipPathUnits="userSpaceOnUse"><path d="M160 111 Q145 95 128 109 Q143 123 160 111 Z"/></clipPath>
+    <clipPath id="eLg" clipPathUnits="userSpaceOnUse"><path d="M79 103 L113 111 Q97 123 80 111 Z"/></clipPath>
+    <clipPath id="eRg" clipPathUnits="userSpaceOnUse"><path d="M161 103 L127 111 Q143 123 160 111 Z"/></clipPath>
+  </defs>
+</svg>
+
+<canvas id="petalCanvas" aria-hidden="true"></canvas>
+
+<div id="app">
+
+  <!-- 1. Котик на входе -->
+  <section class="stage" id="gate">
+    <div class="bubble down" id="gateSay" aria-live="polite">Куда? Сначала гладить</div>
+    <button class="cat-btn" id="gateCatBtn" type="button" aria-label="Погладить котика">
+      <span class="cat-slot" data-mood="grumpy" id="gateCat"></span>
+    </button>
+    <p class="caption off" id="gateHint" aria-hidden="true">Котика можно погладить</p>
+    <button class="btn btn-yes" id="goBtn" type="button" hidden>Пойдём</button>
+  </section>
+
+  <!-- 2. Тест -->
+  <section class="stage" id="quiz" hidden>
+    <div class="guide">
+      <span class="cat-slot cat-sm" data-mood="neutral" id="quizCat" aria-hidden="true"></span>
+      <div class="bubble left" id="quizSay" aria-live="polite">Но сначала экзамен</div>
+    </div>
+
+    <div class="note" id="qIntro">
+      <h1>Проверим, что ты помнишь</h1>
+      <p class="meta">Шесть вопросов. Ответы ты знаешь</p>
+      <button class="btn btn-yes" id="qStart" type="button">Давай</button>
+    </div>
+
+    <div class="note" id="qCard" hidden>
+      <p class="note-num" id="qNum">1 / 6</p>
+      <h2 id="qText"></h2>
+      <div class="opts" id="qOpts"></div>
+      <button class="btn btn-yes" id="qNext" type="button" hidden>Дальше</button>
+    </div>
+  </section>
+
+  <!-- 3. Поймай лепестки -->
+  <section class="stage" id="catch" hidden>
+    <div class="guide">
+      <span class="cat-slot cat-sm" data-mood="neutral" id="catchCat" aria-hidden="true"></span>
+      <div class="bubble left" id="catchSay" aria-live="polite">Роз было пять. Лепестков будет десять, лови</div>
+    </div>
+    <div class="play">
+      <canvas class="field" id="catchCanvas" aria-label="Падающие лепестки. Нажимай на них, чтобы поймать."></canvas>
+      <div class="meter" id="catchMeter" aria-hidden="true"></div>
+      <p class="sr-only" id="catchCount" aria-live="polite">Поймано 0 из 10</p>
+      <p class="play-hint off" id="catchHint" aria-hidden="true">Нажимай прямо на них</p>
+    </div>
+  </section>
+
+  <!-- 4. Звёзды -->
+  <section class="stage" id="stars" hidden>
+    <div class="guide">
+      <span class="cat-slot cat-sm" data-mood="neutral" id="starsCat" aria-hidden="true"></span>
+      <div class="bubble left" id="starsSay" aria-live="polite">Тут семь звёзд. В каждой то, что он просил передать</div>
+    </div>
+    <div class="play">
+      <p class="sr-only" id="starsCount" aria-live="polite">Открыто 0 из 7</p>
+      <div class="sky" id="sky">
+        <svg class="sky-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path id="heartPath" pathLength="1" d="M50 38 L32 22 L16 40 L30 64 L50 84 L70 64 L84 40 L68 22 Z"/></svg>
+      </div>
+      <div class="meter dots" id="starsMeter" aria-hidden="true"></div>
+      <p class="star-text" id="starText" aria-live="polite">Что мне в тебе нравится</p>
+      <button class="btn btn-yes" id="starsNext" type="button" hidden>Дальше</button>
+    </div>
+  </section>
+
+  <!-- 5. Скретч -->
+  <section class="stage" id="scratch" hidden>
+    <div class="guide">
+      <span class="cat-slot cat-sm" data-mood="neutral" id="scratchCat" aria-hidden="true"></span>
+      <div class="bubble left" id="scratchSay" aria-live="polite">Это тебе. Стирай</div>
+    </div>
+    <div class="play">
+      <div class="ticket-wrap"><div class="ticket">
+        <div class="ticket-head"><span class="ticket-title">Счастливый билет</span><span>№ 1 из 1</span></div>
+        <div class="scratch" id="scratchBox">
+          <p class="scratch-msg">Дальше будет самое важное</p>
+          <canvas id="scratchCanvas" tabindex="0" aria-label="Скретч-слой. Проведи пальцем, чтобы стереть, или нажми Enter."></canvas>
+        </div>
+        <div class="ticket-foot">Выигрыш гарантирован</div>
+      </div></div>
+      <button class="btn btn-yes" id="scratchNext" type="button" hidden>Готова</button>
+    </div>
+  </section>
+
+  <!-- 6. Признание -->
+  <section class="stage" id="petals" hidden>
+    <h2 class="sr-only">Я тут хотел тебе кое-что сказать. Я тебя люблю.</h2>
+    <div class="dock">
+      <span class="cat-slot cat-dock" data-mood="neutral" id="dockCat" aria-hidden="true"></span>
+
+      <div class="panel" id="ask" hidden>
+        <p class="big-q">А ты?</p>
+        <div class="choices">
+          <button class="btn btn-yes" id="yesBtn" type="button">Я тебя тоже люблю</button>
+          <button class="btn btn-no" id="noBtn" type="button">Нет</button>
+        </div>
+        <p class="hint">Выбирай внимательно</p>
+      </div>
+
+      <div class="finale" id="finale" hidden>
+        <p class="finale-title">Теперь ты знаешь)</p>
+        <p class="finale-note">В этом сердце ровно 1000 лепестков. Можешь пересчитать</p>
+        <button class="again" id="again" type="button">Ещё раз</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle" hidden>
+  <div class="modal-box">
+    <h3 id="mTitle"></h3>
+    <p id="mBody"></p>
+    <div class="modal-actions">
+      <button class="btn btn-yes" id="mOk" type="button"></button>
+      <button class="btn btn-ghost" id="mAlt" type="button"></button>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const $ = (s) => document.querySelector(s);
+  const clamp = (v) => Math.max(0, Math.min(1, v));
+
+  /* ---------- Котик ---------- */
+  const STRIPE = '#b5642a', LINE = '#3b2414';
+  const CAT = `
+<svg class="cat" viewBox="0 0 240 306" aria-hidden="true">
+  <ellipse cx="120" cy="298" rx="86" ry="7" fill="#000" opacity=".22"/>
+  <path d="M84 150 C70 176 62 210 60 240 C58 268 70 290 96 292 L144 292 C170 290 182 268 180 240 C178 210 170 176 156 150 Z" fill="url(#cBody)"/>
+  <path d="M60 252 C56 222 72 204 92 210 C108 216 110 252 104 276 C98 292 66 292 60 268 Z" fill="url(#cFur)"/>
+  <path d="M180 252 C184 222 168 204 148 210 C132 216 130 252 136 276 C142 292 174 292 180 268 Z" fill="url(#cFur)"/>
+  <g stroke="${STRIPE}" stroke-width="4.5" stroke-linecap="round" fill="none" opacity=".7">
+    <path d="M68 236 q10 -7 22 -3"/><path d="M65 256 q12 -5 25 1"/><path d="M172 236 q-10 -7 -22 -3"/><path d="M175 256 q-12 -5 -25 1"/>
+    <path d="M78 178 q8 -2 14 4"/><path d="M162 178 q-8 -2 -14 4"/>
+  </g>
+  <path d="M104 218 C110 240 108 266 102 286" stroke="#8f4c1c" stroke-opacity=".22" stroke-width="5" stroke-linecap="round" fill="none"/>
+  <path d="M136 218 C130 240 132 266 138 286" stroke="#8f4c1c" stroke-opacity=".22" stroke-width="5" stroke-linecap="round" fill="none"/>
+  <path d="M98 192 C96 224 95 256 96 282 C96 291 144 291 144 282 C145 256 144 224 142 192 C132 200 108 200 98 192 Z" fill="url(#cFur)"/>
+  <path d="M100 206 C98 236 98 260 99 280" stroke="#8f4c1c" stroke-opacity=".16" stroke-width="5" stroke-linecap="round" fill="none"/>
+  <path d="M140 206 C142 236 142 260 141 280" stroke="#8f4c1c" stroke-opacity=".16" stroke-width="5" stroke-linecap="round" fill="none"/>
+  <g stroke="${STRIPE}" stroke-width="3" stroke-linecap="round" fill="none" opacity=".45">
+    <path d="M101 232 q8 2 15 0"/><path d="M101 248 q8 2 15 0"/><path d="M139 232 q-8 2 -15 0"/><path d="M139 248 q-8 2 -15 0"/>
+  </g>
+  <path d="M120 222 C119 246 120 266 120 288" stroke="#8f4c1c" stroke-opacity=".13" stroke-width="8" stroke-linecap="round" fill="none"/>
+  <path d="M120 222 C119 246 120 266 120 288" stroke="#8f4c1c" stroke-opacity=".38" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+  <path d="M95.5 264 C103 259 112 259 119.8 264 L120.6 282 C121.6 290 116 293 107.6 293 C99 293 93.4 290 94.4 282 Z" fill="url(#cSock)"/>
+  <path d="M120.2 264 C128 259 137 259 144.5 264 L145.6 282 C146.6 290 141 293 132.4 293 C124 293 118.4 290 119.4 282 Z" fill="url(#cSock)"/>
+  <path d="M103.5 285 v5 M111.5 285 v5 M128.5 285 v5 M136.5 285 v5" stroke="#c4a385" stroke-width="1.3" stroke-linecap="round" opacity=".85"/>
+  <path d="M100 156 C96 182 102 206 120 228 C138 206 144 182 140 156 C132 166 108 166 100 156 Z" fill="url(#cCream)"/>
+  <path d="M168 280 C198 284 208 298 182 300 C152 302 116 302 90 298" stroke="#d98a44" stroke-width="15" stroke-linecap="round" fill="none"/>
+  <path d="M160 294 l-1 13 M140 295 l-1 12 M120 295 l-1 12" stroke="${STRIPE}" stroke-width="4" stroke-linecap="round"/>
+  <path class="tailTip" d="M90 298 C74 297 64 290 66 278" stroke="#c4722f" stroke-width="14" stroke-linecap="round" fill="none"/>
+
+  <path d="M60 126 L38 136 L56 141 L44 152 L66 148 Z" fill="#dc8a43"/>
+  <path d="M180 126 L202 136 L184 141 L196 152 L174 148 Z" fill="#dc8a43"/>
+  <path d="M58 94 C53 62 57 40 66 27 C81 40 97 54 105 67 Z" fill="url(#cFur)"/>
+  <path d="M66 86 C63 65 66 50 70 42 C80 52 90 60 97 69 Z" fill="url(#cEar)"/>
+  <path d="M71 72 l-6 -13 M77 70 l-2 -13" stroke="#fff3e3" stroke-width="1.4" stroke-linecap="round" opacity=".85"/>
+  <g class="earR">
+    <path d="M182 94 C187 62 183 40 174 27 C159 40 143 54 135 67 Z" fill="url(#cFur)"/>
+    <path d="M174 86 C177 65 174 50 170 42 C160 52 150 60 143 69 Z" fill="url(#cEar)"/>
+    <path d="M169 72 l6 -13 M163 70 l2 -13" stroke="#fff3e3" stroke-width="1.4" stroke-linecap="round" opacity=".85"/>
+  </g>
+
+  <path d="M120 52 C160 52 190 78 192 112 C194 132 186 146 174 156 C162 166 142 173 120 173 C98 173 78 166 66 156 C54 146 46 132 48 112 C50 78 80 52 120 52 Z" fill="url(#cHead)"/>
+  <g stroke="${STRIPE}" stroke-width="4.5" stroke-linecap="round" fill="none" opacity=".85">
+    <path d="M107 61 q3 10 -2 21"/><path d="M120 57 v23"/><path d="M133 61 q-3 10 2 21"/>
+    <path d="M57 110 q10 0 17 4"/><path d="M55 122 q10 -1 17 3"/><path d="M183 110 q-10 0 -17 4"/><path d="M185 122 q-10 -1 -17 3"/>
+  </g>
+  <ellipse cx="107" cy="141" rx="17" ry="13" fill="url(#cCream)"/>
+  <ellipse cx="133" cy="141" rx="17" ry="13" fill="url(#cCream)"/>
+  <ellipse cx="120" cy="153" rx="11" ry="8" fill="url(#cCream)"/>
+
+  <g class="m" style="opacity:var(--n)">
+    <g class="eye">
+      <g clip-path="url(#eLn)"><circle cx="96" cy="109" r="15" fill="url(#cIris)"/><ellipse cx="96" cy="109" rx="2.8" ry="8.5" fill="#1d120b"/><circle cx="99.5" cy="105" r="2.4" fill="#fff"/></g>
+      <path d="M80 111 Q95 95 112 109 Q97 123 80 111 Z" fill="none" stroke="${LINE}" stroke-width="2.6" stroke-linejoin="round"/>
+    </g>
+    <g class="eye">
+      <g clip-path="url(#eRn)"><circle cx="144" cy="109" r="15" fill="url(#cIris)"/><ellipse cx="144" cy="109" rx="2.8" ry="8.5" fill="#1d120b"/><circle cx="147.5" cy="105" r="2.4" fill="#fff"/></g>
+      <path d="M160 111 Q145 95 128 109 Q143 123 160 111 Z" fill="none" stroke="${LINE}" stroke-width="2.6" stroke-linejoin="round"/>
+    </g>
+  </g>
+  <g class="m" style="opacity:var(--g)">
+    <g class="eye">
+      <g clip-path="url(#eLg)"><circle cx="96" cy="112" r="15" fill="url(#cIris)"/><ellipse cx="96" cy="113" rx="2.6" ry="7" fill="#1d120b"/><circle cx="99" cy="110" r="2" fill="#fff"/></g>
+      <path d="M79 103 L113 111 Q97 123 80 111 Z" fill="none" stroke="${LINE}" stroke-width="2.4" stroke-linejoin="round"/>
+      <path d="M79 103 L113 111" stroke="${LINE}" stroke-width="3.6" stroke-linecap="round"/>
+    </g>
+    <g class="eye">
+      <g clip-path="url(#eRg)"><circle cx="144" cy="112" r="15" fill="url(#cIris)"/><ellipse cx="144" cy="113" rx="2.6" ry="7" fill="#1d120b"/><circle cx="147" cy="110" r="2" fill="#fff"/></g>
+      <path d="M161 103 L127 111 Q143 123 160 111 Z" fill="none" stroke="${LINE}" stroke-width="2.4" stroke-linejoin="round"/>
+      <path d="M161 103 L127 111" stroke="${LINE}" stroke-width="3.6" stroke-linecap="round"/>
+    </g>
+    <path d="M81 95 L108 101 M159 95 L132 101" stroke="#8a4a1e" stroke-width="3.5" stroke-linecap="round"/>
+  </g>
+  <g class="m" style="opacity:var(--s)">
+    <g class="eye">
+      <circle cx="96" cy="109" r="11.5" fill="url(#cIris)" stroke="${LINE}" stroke-width="2.4"/>
+      <circle cx="96" cy="110" r="7.5" fill="#1d120b"/>
+      <circle cx="100" cy="105" r="3" fill="#fff"/><circle cx="92.5" cy="113.5" r="1.5" fill="#fff"/>
+    </g>
+    <g class="eye">
+      <circle cx="144" cy="109" r="11.5" fill="url(#cIris)" stroke="${LINE}" stroke-width="2.4"/>
+      <circle cx="144" cy="110" r="7.5" fill="#1d120b"/>
+      <circle cx="148" cy="105" r="3" fill="#fff"/><circle cx="140.5" cy="113.5" r="1.5" fill="#fff"/>
+    </g>
+    <path d="M82 95 L106 88 M158 95 L134 88" stroke="#8a4a1e" stroke-width="3" stroke-linecap="round" fill="none"/>
+  </g>
+  <g class="m" style="opacity:var(--h)">
+    <path d="M80 112 Q95 99 110 112 M130 112 Q145 99 160 112" stroke="${LINE}" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+    <ellipse cx="76" cy="133" rx="11" ry="5.5" fill="#f08a8a" opacity=".7"/>
+    <ellipse cx="164" cy="133" rx="11" ry="5.5" fill="#f08a8a" opacity=".7"/>
+  </g>
+
+  <path d="M111 132 Q120 127 129 132 Q125 141 120 143 Q115 141 111 132 Z" fill="url(#cNose)"/>
+  <path d="M120 143 v6" stroke="#5a3320" stroke-width="2" stroke-linecap="round"/>
+  <path class="m" style="opacity:var(--n)" d="M120 149 Q113 155 106 151 M120 149 Q127 155 134 151" stroke="#5a3320" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+  <path class="m" style="opacity:var(--g)" d="M109 156 Q120 149 131 156" stroke="#5a3320" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+  <path class="m" style="opacity:var(--s)" d="M112 156 Q120 151 128 156" stroke="#5a3320" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+  <path class="m" style="opacity:var(--h)" d="M107 149 Q120 165 133 149 Q120 156 107 149 Z" fill="#b84a55" stroke="#5a3320" stroke-width="2" stroke-linejoin="round"/>
+
+  <g stroke="#fff6ea" stroke-width="1.3" stroke-linecap="round" fill="none" opacity=".85">
+    <path d="M92 145 Q66 139 38 141"/><path d="M92 149 Q66 149 40 155"/><path d="M94 153 Q70 159 46 170"/>
+    <path d="M148 145 Q174 139 202 141"/><path d="M148 149 Q174 149 200 155"/><path d="M146 153 Q170 159 194 170"/>
+  </g>
+</svg>`;
+
+  document.querySelectorAll('.cat-slot').forEach(slot => {
+    slot.style.display = 'block';
+    slot.innerHTML = CAT;
+    slot.firstElementChild.classList.add('mood-' + (slot.dataset.mood || 'neutral'));
+  });
+  const catOf = (id) => document.getElementById(id).firstElementChild;
+  function mood(svg, m){
+    svg.classList.remove('mood-grumpy', 'mood-neutral', 'mood-happy', 'mood-sad');
+    svg.classList.add('mood-' + m);
+  }
+  if (!reduce){
+    setInterval(() => {
+      document.querySelectorAll('.cat:not(.mood-happy)').forEach(c => {
+        if (Math.random() < 0.6){ c.classList.add('blink'); setTimeout(() => c.classList.remove('blink'), 150); }
+      });
+    }, 3200);
+    setInterval(() => {
+      document.querySelectorAll('.cat').forEach(c => {
+        if (Math.random() < 0.35){ c.classList.remove('twitch'); void c.getBoundingClientRect(); c.classList.add('twitch'); }
+      });
+    }, 5200);
+  }
+
+  function show(id){
+    document.querySelectorAll('.stage').forEach(s => { s.hidden = s.id !== id; });
+    window.scrollTo(0, 0);
+  }
+  function floatHeart(el){
+    if (reduce) return;
+    const r = el.getBoundingClientRect();
+    const h = document.createElement('span');
+    h.className = 'float-heart';
+    h.textContent = '♥';
+    h.style.left = (r.left + r.width * (0.25 + Math.random() * 0.5)) + 'px';
+    h.style.top = (r.top + r.height * 0.2) + 'px';
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 1200);
+  }
+
+  /* ---------- 1. Вход ---------- */
+  const gateCat = catOf('gateCat'), gateCatBtn = $('#gateCatBtn'), gateSay = $('#gateSay');
+  const goBtn = $('#goBtn'), gateHint = $('#gateHint');
+  const GATE = [
+    'Куда? Сначала гладить',
+    'Мрр... ещё',
+    'Ещё разочек',
+    'Ладно, уговорила. Иди за мной'
+  ];
+  let pets = 0, gateHintT = 0;
+  /* the hint only shows up if she hasn't figured out the cat on her own */
+  function armGateHint(){
+    clearTimeout(gateHintT);
+    gateHint.hidden = false; gateHint.classList.add('off');
+    gateHintT = setTimeout(() => { if (pets === 0) gateHint.classList.remove('off'); }, 4000);
+  }
+  armGateHint();
+  function pet(){
+    floatHeart(gateCatBtn);
+    if (pets >= 3) return;
+    pets++;
+    gateHint.classList.add('off');
+    gateCatBtn.classList.remove('wiggle'); void gateCatBtn.getBoundingClientRect(); gateCatBtn.classList.add('wiggle');
+    if (pets === 1) mood(gateCat, 'neutral');
+    if (pets === 3){ mood(gateCat, 'happy'); gateHint.hidden = true; goBtn.hidden = false; goBtn.focus({ preventScroll: true }); }
+    gateSay.textContent = GATE[pets];
+  }
+  gateCatBtn.addEventListener('click', pet);
+  goBtn.addEventListener('click', () => show('quiz'));
+
+  /* ---------- 2. Тест ---------- */
+  const Q = [
+    { q: 'Кто кого копирует?',
+      opts: ['Он меня', 'Я его', 'Это телепатия'],
+      hint: '',
+      react: 'Пять одинаковых комментариев за один фильм. Это уже телепатия' },
+    { q: 'Что такое «аванс»?',
+      opts: ['Предоплата', 'Ничего не значит', '«Сладких снов, дорогой мой»'],
+      hint: 'Тут важна формулировка',
+      react: 'Третий вариант. Аванс получен и сохранён' },
+    { q: 'Сколько раз ты сказала «нет» за последний месяц?',
+      opts: ['Пару раз', 'Не считала', 'Я всегда говорю «да»'],
+      hint: '',
+      react: 'Много. Запомни этот вопрос' },
+    { q: 'Сколько роз было в букете?',
+      opts: ['5', '10', '1000'],
+      hint: 'Вспоминай вторник',
+      react: 'Пять белых. Ты сама сказала, что будет и 10, и 100, и 1000' },
+    { q: 'Кто здесь настырный?',
+      opts: ['Он', 'Он', 'Тоже он'],
+      hint: 'Самый лёгкий вопрос',
+      react: 'Тут без вариантов' },
+    { q: 'Что покажет время?',
+      opts: ['Серьёзность намерений', 'Ничего', 'Ещё рано говорить'],
+      hint: '',
+      react: 'Кое-что оно уже показало. Пойдём' }
+  ];
+  const qIntro = $('#qIntro'), qCard = $('#qCard'), qNum = $('#qNum');
+  const qText = $('#qText'), qOpts = $('#qOpts'), qNext = $('#qNext');
+  const quizSay = $('#quizSay'), quizCat = catOf('quizCat');
+  let qi = 0;
+
+  $('#qStart').addEventListener('click', () => { qIntro.hidden = true; qCard.hidden = false; qi = 0; renderQ(); });
+  function renderQ(){
+    const q = Q[qi];
+    qNum.textContent = (qi + 1) + ' / ' + Q.length;
+    qNum.setAttribute('aria-label', 'Вопрос ' + (qi + 1) + ' из ' + Q.length);
+    /* each question is a fresh note, stuck on a little differently */
+    qCard.classList.toggle('alt', qi % 2 === 1);
+    qCard.classList.remove('flip'); void qCard.offsetWidth; qCard.classList.add('flip');
+    qText.textContent = q.q;
+    qOpts.innerHTML = '';
+    q.opts.forEach(o => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'opt'; b.textContent = o;
+      b.addEventListener('click', () => pick(b));
+      qOpts.appendChild(b);
+    });
+    qNext.hidden = true;
+    quizSay.textContent = q.hint;
+    quizSay.style.visibility = q.hint ? '' : 'hidden';
+    mood(quizCat, 'neutral');
+  }
+  function pick(b){
+    qOpts.querySelectorAll('.opt').forEach(x => { x.disabled = true; });
+    b.classList.add('picked');
+    quizSay.textContent = Q[qi].react;
+    quizSay.style.visibility = '';
+    mood(quizCat, 'happy');
+    qNext.hidden = false;
+  }
+  qNext.addEventListener('click', () => {
+    if (qi < Q.length - 1){ qi++; renderQ(); }
+    else { show('catch'); startCatch(); }
+  });
+
+  /* Rose petal sprites: heart-shaped petal, velvet gradient, veins, darker curled rim, soft shadow.
+     Drawn once per shade, then stamped with drawImage so hundreds of petals stay smooth. */
+  const PETAL_SHADES = [
+    ['#e5354f', '#a90f28', '#4f0410'],
+    ['#f04a62', '#bb1631', '#5c0613'],
+    ['#d42642', '#94091f', '#43030c'],
+    ['#ff5d74', '#c81f3b', '#6a0819'],
+    ['#c81d39', '#860719', '#3a020a']
+  ];
+  function makePetalSprite([lt, md, dk]){
+    const W = 80, H = 92, cv = document.createElement('canvas');
+    cv.width = W; cv.height = H;
+    const c = cv.getContext('2d');
+    c.translate(W / 2, H / 2 - 2);
+    const sx = W * 0.4, sy = H * 0.41;
+    const P = (x, y) => [x * sx, y * sy];
+    const path = new Path2D();
+    path.moveTo(...P(0, 1));
+    path.bezierCurveTo(...P(-1.08, 0.66), ...P(-1.12, -0.6), ...P(-0.4, -0.97));
+    path.quadraticCurveTo(...P(0, -0.78), ...P(0.4, -0.97));
+    path.bezierCurveTo(...P(1.12, -0.6), ...P(1.08, 0.66), ...P(0, 1));
+    path.closePath();
+    c.save();
+    c.shadowColor = 'rgba(30,0,8,.5)'; c.shadowBlur = 7; c.shadowOffsetY = 3;
+    c.fillStyle = md; c.fill(path);
+    c.restore();
+    const g = c.createRadialGradient(0, sy * 0.8, 2, 0, -sy * 0.05, sy * 1.35);
+    g.addColorStop(0, lt); g.addColorStop(0.45, md); g.addColorStop(1, dk);
+    c.fillStyle = g; c.fill(path);
+    c.save();
+    c.clip(path);
+    const sheen = c.createRadialGradient(-sx * 0.32, -sy * 0.3, 1, -sx * 0.32, -sy * 0.3, sx * 0.95);
+    sheen.addColorStop(0, 'rgba(255,214,224,.3)'); sheen.addColorStop(1, 'rgba(255,224,232,0)');
+    c.fillStyle = sheen; c.fillRect(-W / 2, -H / 2, W, H);
+    c.strokeStyle = 'rgba(80,0,18,.2)'; c.lineWidth = 0.9;
+    for (let k = -2; k <= 2; k++){
+      c.beginPath(); c.moveTo(0, sy * 0.95);
+      c.quadraticCurveTo(k * sx * 0.22, sy * 0.1, k * sx * 0.4, -sy * 0.86); c.stroke();
+    }
+    c.strokeStyle = 'rgba(60,0,14,.38)'; c.lineWidth = 3.2; c.stroke(path);
+    c.restore();
+    return cv;
+  }
+  let SPRITES = null;
+  function drawPetal(c, x, y, s, rot, si, a, fl){
+    if (!SPRITES) SPRITES = PETAL_SHADES.map(makePetalSprite);
+    const sp = SPRITES[si] || SPRITES[0];
+    const w = s * 1.5, h = w * sp.height / sp.width;
+    c.save();
+    c.translate(x, y); c.rotate(rot); c.scale(1, fl == null ? 1 : fl);
+    c.globalAlpha = a;
+    c.drawImage(sp, -w / 2, -h / 2, w, h);
+    c.restore();
+  }
+  function floatHeartAt(x, y){
+    if (reduce) return;
+    const h = document.createElement('span');
+    h.className = 'float-heart'; h.textContent = '♥';
+    h.style.left = (x - 10) + 'px'; h.style.top = (y - 22) + 'px';
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 1200);
+  }
+
+  /* ---------- 3. Поймай лепестки ---------- */
+  const GOAL = 10;
+  const gcv = $('#catchCanvas'), gctx = gcv.getContext('2d');
+  const catchCount = $('#catchCount'), catchSay = $('#catchSay'), catchCat = catOf('catchCat');
+  const catchMeter = $('#catchMeter'), catchHint = $('#catchHint');
+  let gW = 0, gH = 0, gParts = [], caught = 0, gRun = false, gLast = 0, spawnT = 0, catchHintT = 0, catchDoneT = 0;
+  function gSize(){
+    const r = gcv.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1);
+    gW = r.width; gH = r.height;
+    gcv.width = Math.round(gW * dpr); gcv.height = Math.round(gH * dpr);
+    gctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  function startCatch(){
+    caught = 0; gParts = []; spawnT = 0;
+    catchCount.textContent = 'Поймано 0 из ' + GOAL;
+    catchMeter.innerHTML = '<i></i>'.repeat(GOAL);
+    clearTimeout(catchHintT); clearTimeout(catchDoneT);
+    catchHint.classList.add('off');
+    catchHintT = setTimeout(() => { if (caught === 0) catchHint.classList.remove('off'); }, 5000);
+    catchSay.textContent = 'Роз было пять. Лепестков будет десять, лови';
+    mood(catchCat, 'neutral');
+    requestAnimationFrame(() => {
+      gSize(); gLast = performance.now();
+      if (!gRun){ gRun = true; requestAnimationFrame(gFrame); }
+    });
+  }
+  function gFrame(ts){
+    if (!gRun) return;
+    const dt = Math.min(0.05, (ts - gLast) / 1000 || 0); gLast = ts;
+    spawnT -= dt;
+    if (spawnT <= 0 && caught < GOAL){
+      gParts.push({ x: 26 + Math.random() * Math.max(1, gW - 52), y: -24,
+        vy: (reduce ? 40 : 60) + Math.random() * 45, ph: Math.random() * 6.283, amp: 12 + Math.random() * 18,
+        r: Math.random() * 6.283, vr: (Math.random() - 0.5) * 2, s: 21 + Math.random() * 7, c: pickC(), t: 0, cx: 0 });
+      spawnT = 0.5 + Math.random() * 0.35;
+    }
+    gctx.clearRect(0, 0, gW, gH);
+    for (let i = gParts.length - 1; i >= 0; i--){
+      const p = gParts[i];
+      p.t += dt; p.y += p.vy * dt; p.r += p.vr * dt;
+      p.cx = p.x + Math.sin(p.t * 1.6 + p.ph) * p.amp;
+      if (p.y > gH + 30){ gParts.splice(i, 1); continue; }
+      drawPetal(gctx, p.cx, p.y, p.s, p.r, p.c, 1, reduce ? 1 : flap(p.t, p.ph, 1.8));
+    }
+    requestAnimationFrame(gFrame);
+  }
+  gcv.addEventListener('pointerdown', (e) => {
+    if (caught >= GOAL) return;
+    const r = gcv.getBoundingClientRect();
+    const x = e.clientX - r.left, y = e.clientY - r.top;
+    let best = -1, bd = 1e9;
+    gParts.forEach((p, i) => { const d = Math.hypot(p.cx - x, p.y - y); if (d < bd){ bd = d; best = i; } });
+    if (best < 0 || bd > 36) return;
+    gParts.splice(best, 1);
+    caught++;
+    floatHeartAt(e.clientX, e.clientY);
+    catchCount.textContent = 'Поймано ' + caught + ' из ' + GOAL;
+    if (catchMeter.children[caught - 1]) catchMeter.children[caught - 1].classList.add('on');
+    catchHint.classList.add('off');
+    if (caught === GOAL){
+      catchSay.textContent = 'Десять есть. Сотню пропустим)';
+      mood(catchCat, 'happy');
+      /* no button here: the cat says its line and leads on */
+      catchDoneT = setTimeout(() => { gRun = false; show('stars'); startStars(); }, 2600);
+    } else if (caught === 5){
+      catchSay.textContent = 'Пять. Как в букете';
+    }
+  });
+
+  /* ---------- 4. Звёзды ---------- */
+  const STARS = [[32, 22], [16, 40], [30, 64], [50, 84], [70, 64], [84, 40], [68, 22]];
+  const LIKES = [
+    'Как ты смущаешься и делаешь вид, что нет',
+    'Как ты споришь, даже когда тебе всё нравится',
+    'Что ты обо мне заботишься. Я это вижу',
+    'Что от тебя не спрячешь ни одной мелочи',
+    'Твоя улыбка. Особенно та, которую ты прячешь',
+    'Что с тобой не скучно даже в два ночи',
+    'Что со мной ты настоящая. Мне это дороже всего'
+  ];
+  const sky = $('#sky'), starText = $('#starText'), starsCount = $('#starsCount'), starsNext = $('#starsNext');
+  const starsSay = $('#starsSay'), starsCat = catOf('starsCat'), heartPath = $('#heartPath');
+  const STAR_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z"/></svg>';
+  let opened = 0;
+  function startStars(){
+    opened = 0;
+    sky.querySelectorAll('.star').forEach(s => s.remove());
+    heartPath.classList.remove('drawn');
+    starText.textContent = 'Что мне в тебе нравится';
+    starsCount.textContent = 'Открыто 0 из ' + STARS.length;
+    $('#starsMeter').innerHTML = '<i></i>'.repeat(STARS.length);
+    starsSay.textContent = 'Тут семь звёзд. В каждой то, что он просил передать';
+    starsNext.hidden = true; mood(starsCat, 'neutral');
+    STARS.forEach(([x, y], i) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'star';
+      b.style.left = x + '%'; b.style.top = y + '%';
+      b.style.animationDelay = (i * 0.37) + 's';
+      b.setAttribute('aria-label', 'Звезда ' + (i + 1));
+      b.innerHTML = STAR_SVG;
+      b.addEventListener('click', () => openStar(b));
+      sky.appendChild(b);
+    });
+  }
+  function openStar(b){
+    if (!b.classList.contains('on')){
+      b.classList.add('on');
+      b.dataset.text = LIKES[opened];
+      opened++;
+      starsCount.textContent = 'Открыто ' + opened + ' из ' + STARS.length;
+      const pip = $('#starsMeter').children[opened - 1];
+      if (pip) pip.classList.add('on');
+      if (opened === STARS.length){
+        heartPath.classList.add('drawn');
+        starsSay.textContent = 'Смотри, что получилось';
+        mood(starsCat, 'happy');
+        starsNext.hidden = false;
+      }
+    }
+    starText.textContent = b.dataset.text;
+    starText.classList.remove('pop'); void starText.offsetWidth; starText.classList.add('pop');
+  }
+  starsNext.addEventListener('click', () => { show('scratch'); startScratch(); });
+
+  /* ---------- 5. Скретч ---------- */
+  const scv = $('#scratchCanvas'), sctx = scv.getContext('2d', { willReadFrequently: true });
+  const scratchBox = $('#scratchBox'), scratchNext = $('#scratchNext'), scratchSay = $('#scratchSay'), scratchCat = catOf('scratchCat');
+  let sW = 0, sH = 0, scratching = false, sLast = null, sDone = false;
+  function startScratch(){
+    sDone = false; scratchNext.hidden = true; scv.hidden = false; scv.style.opacity = '1';
+    scratchSay.textContent = 'Это тебе. Стирай'; mood(scratchCat, 'neutral');
+    requestAnimationFrame(paintCover);
+  }
+  function paintCover(){
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    sW = scratchBox.offsetWidth; sH = scratchBox.offsetHeight;
+    scv.width = Math.round(sW * dpr); scv.height = Math.round(sH * dpr);
+    sctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    sctx.globalCompositeOperation = 'source-over';
+    const g = sctx.createLinearGradient(0, 0, sW, sH);
+    g.addColorStop(0, '#c99a4e'); g.addColorStop(0.45, '#f3dca2'); g.addColorStop(0.6, '#e7c47c'); g.addColorStop(1, '#b0803a');
+    sctx.fillStyle = g; sctx.fillRect(0, 0, sW, sH);
+    sctx.fillStyle = 'rgba(255,255,255,.4)';
+    for (let i = 0; i < 80; i++){ sctx.beginPath(); sctx.arc(Math.random() * sW, Math.random() * sH, Math.random() * 1.4 + 0.3, 0, 6.283); sctx.fill(); }
+    sctx.strokeStyle = 'rgba(120,80,30,.18)'; sctx.lineWidth = 1;
+    for (let x = -sH; x < sW; x += 9){ sctx.beginPath(); sctx.moveTo(x, sH); sctx.lineTo(x + sH, 0); sctx.stroke(); }
+    sctx.fillStyle = '#5a3a14'; sctx.font = '800 17px Nunito, system-ui, sans-serif';
+    sctx.textAlign = 'center'; sctx.textBaseline = 'middle';
+    sctx.fillText('Стирать тут', sW / 2, sH / 2);
+  }
+  function scratchAt(x, y){
+    sctx.globalCompositeOperation = 'destination-out';
+    sctx.strokeStyle = '#000'; sctx.fillStyle = '#000';
+    sctx.lineCap = 'round'; sctx.lineJoin = 'round'; sctx.lineWidth = 46;
+    sctx.beginPath();
+    if (sLast){ sctx.moveTo(sLast[0], sLast[1]); sctx.lineTo(x, y); sctx.stroke(); }
+    else { sctx.arc(x, y, 23, 0, 6.283); sctx.fill(); }
+    sLast = [x, y];
+  }
+  function clearedShare(){
+    const d = sctx.getImageData(0, 0, scv.width, scv.height).data;
+    let c = 0, t = 0;
+    for (let i = 3; i < d.length; i += 64){ t++; if (d[i] < 30) c++; }
+    return c / t;
+  }
+  function revealScratch(){
+    sDone = true; scv.style.opacity = '0';
+    setTimeout(() => { scv.hidden = true; }, reduce ? 0 : 500);
+    scratchSay.textContent = 'Готова?'; mood(scratchCat, 'happy');
+    scratchNext.hidden = false;
+  }
+  scv.addEventListener('pointerdown', (e) => {
+    if (sDone) return;
+    scratching = true; sLast = null;
+    try { scv.setPointerCapture(e.pointerId); } catch (err) {}
+    scratchAt(e.offsetX, e.offsetY);
+  });
+  scv.addEventListener('pointermove', (e) => {
+    if (!scratching) return;
+    scratchAt(e.offsetX, e.offsetY);
+  });
+  function endScratch(){
+    if (!scratching) return;
+    scratching = false; sLast = null;
+    if (!sDone && clearedShare() > 0.5) revealScratch();
+  }
+  scv.addEventListener('pointerup', endScratch);
+  scv.addEventListener('pointercancel', endScratch);
+  scv.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && !sDone){ e.preventDefault(); revealScratch(); } });
+  scratchNext.addEventListener('click', () => { show('petals'); startPetals(); });
+
+  window.addEventListener('resize', () => {
+    if (!$('#catch').hidden) gSize();
+    if (!$('#scratch').hidden && !sDone) paintCover();
+  });
+
+  /* ---------- 3. Лепестки ---------- */
+  const cv = $('#petalCanvas'), ctx = cv.getContext('2d');
+  const pickC = () => (Math.random() * PETAL_SHADES.length) | 0;
+  const flap = (t, ph, sp) => 0.32 + 0.68 * Math.abs(Math.cos(t * sp + ph));
+  const PHRASE = ['Я тут хотел тебе', 'кое-что сказать'];
+  const TOTAL = 1000; /* she said there would be 10, 100 and 1000: the finale really is a thousand petals */
+  const dockCat = catOf('dockCat');
+  let W = 0, H = 0, parts = [], ambient = [];
+  let running = false, t0 = 0, last = 0, now = 0;
+  let state = 'idle', chars = [], phraseFS = 0, tBreak = 0, revealEnd = 0, askTimer = 0;
+
+  function size(){
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    W = window.innerWidth; H = window.innerHeight;
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    cv.style.width = W + 'px'; cv.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  const phraseFont = () => '400 ' + phraseFS + 'px "Bad Script", "Segoe Script", "Bradley Hand", cursive';
+  function layoutPhrase(){
+    phraseFS = Math.min(W * 0.11, 54);
+    ctx.font = phraseFont();
+    const cy = H * 0.26;
+    chars = []; let i = 0;
+    PHRASE.forEach((line, li) => {
+      const y = cy + (li - 0.5) * phraseFS * 1.35;
+      let x = W / 2 - ctx.measureText(line).width / 2;
+      for (const ch of line){ chars.push({ ch, x, y, i: i++ }); x += ctx.measureText(ch).width; }
+    });
+    revealEnd = 0.4 + chars.length * 0.065 + 0.5;
+  }
+  function drawPhrase(t, fade){
+    ctx.save();
+    ctx.font = phraseFont(); ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#fff4ec'; ctx.shadowColor = 'rgba(226,62,87,.6)'; ctx.shadowBlur = 16;
+    for (const c of chars){
+      const a = (reduce ? 1 : clamp((t - 0.4 - c.i * 0.065) / 0.5)) * fade;
+      if (a <= 0) continue;
+      ctx.globalAlpha = a;
+      ctx.fillText(c.ch, c.x, c.y + (1 - a) * 8);
+    }
+    ctx.restore();
+  }
+  /* shapes are drawn offscreen once, then sampled on a grid; each grid hit becomes a petal's home */
+  function raster(draw){
+    const off = document.createElement('canvas'); off.width = W; off.height = H;
+    const o = off.getContext('2d', { willReadFrequently: true });
+    draw(o);
+    return o.getImageData(0, 0, W, H).data;
+  }
+  function sample(data, gap){
+    const pts = [];
+    for (let y = 0; y < H; y += gap) for (let x = 0; x < W; x += gap){
+      const xi = x | 0, yi = y | 0;
+      if (data[(yi * W + xi) * 4 + 3] > 128) pts.push([xi, yi]);
+    }
+    return pts;
+  }
+  /* tighten the grid until the shape holds at least n points, then drop random extras: exactly n */
+  function exactly(data, n, startGap){
+    let gap = startGap, pts = sample(data, gap);
+    while (pts.length < n && gap > 2){ gap -= 0.25; pts = sample(data, gap); }
+    if (pts.length > n){
+      const drop = new Set();
+      while (drop.size < pts.length - n) drop.add((Math.random() * pts.length) | 0);
+      pts = pts.filter((_, i) => !drop.has(i));
+    }
+    return { pts: mapTo(pts, n), gap };
+  }
+  function phrasePoints(){
+    const data = raster(o => {
+      o.font = phraseFont(); o.textBaseline = 'middle'; o.fillStyle = '#000';
+      for (const c of chars) o.fillText(c.ch, c.x, c.y);
+    });
+    let gap = 2, pts = sample(data, gap);
+    while (pts.length > 900 && gap < 12) pts = sample(data, ++gap);
+    return pts;
+  }
+  function textPoints(){
+    const fs = Math.min(W * 0.21, H * 0.13, 150);
+    const data = raster(o => {
+      o.fillStyle = '#000'; o.textAlign = 'center'; o.textBaseline = 'middle';
+      o.font = '900 ' + fs + 'px Nunito, system-ui, sans-serif';
+      const cy = H * 0.26;
+      o.fillText('Я тебя', W / 2, cy - fs * 0.55);
+      o.fillText('люблю', W / 2, cy + fs * 0.55);
+    });
+    return exactly(data, TOTAL, Math.max(4, fs / 9));
+  }
+  function heartPoints(n){
+    const r = Math.min(W * 0.36, H * 0.17);
+    const cx = W / 2, cy = H * 0.27;
+    const data = raster(o => {
+      o.fillStyle = '#000'; o.beginPath();
+      for (let a = 0; a <= Math.PI * 2 + 0.01; a += 0.02){
+        const x = 16 * Math.pow(Math.sin(a), 3);
+        const y = 13 * Math.cos(a) - 5 * Math.cos(2 * a) - 2 * Math.cos(3 * a) - Math.cos(4 * a);
+        const px = cx + x / 17 * r, py = cy - y / 17 * r;
+        if (a === 0) o.moveTo(px, py); else o.lineTo(px, py);
+      }
+      o.fill();
+    });
+    return exactly(data, n, 24);
+  }
+  function mapTo(src, n){
+    const out = [];
+    if (!src.length) src = [[W / 2, H * 0.26]];
+    for (let i = 0; i < n; i++) out.push(src[Math.floor(i * src.length / n)] || src[i % src.length]);
+    return out;
+  }
+  function flyParts(starts, targets, t, opts){
+    const instant = reduce || opts.snap;
+    const sz = opts.size;
+    parts = targets.map(([tx, ty], i) => {
+      const [sx, sy] = starts[i];
+      return {
+        sx: sx, sy: sy,
+        tx: tx + (Math.random() - 0.5) * sz * 0.35, ty: ty + (Math.random() - 0.5) * sz * 0.35,
+        start: t, d: instant ? 0 : opts.delay(sx, sy), dur: instant ? 0.001 : opts.dur(),
+        ph: Math.random() * 6.283, amp: opts.amp(), r0: Math.random() * 6.283,
+        rf: Math.random() * 6.283, s: sz * (1.05 + Math.random() * 0.4), c: (parts[i] && parts[i].c != null) ? parts[i].c : pickC(),
+        fl: 0.7 + Math.random() * 0.3,
+        x: sx, y: sy
+      };
+    });
+  }
+  function newAmb(init){
+    return { x: Math.random() * W, y: init ? Math.random() * H : -20,
+      vy: 16 + Math.random() * 28, ph: Math.random() * 6.283, amp: 10 + Math.random() * 25,
+      r: Math.random() * 6.283, vr: (Math.random() - 0.5) * 1.5, s: 6 + Math.random() * 8,
+      c: pickC(), a: 0.25 + Math.random() * 0.35 };
+  }
+  function makeAmbient(){
+    ambient = [];
+    if (reduce) return;
+    const n = Math.round(Math.min(26, W / 16));
+    for (let i = 0; i < n; i++) ambient.push(newAmb(true));
+  }
+  function petal(x, y, s, rot, c, a, fl){ drawPetal(ctx, x, y, s, rot, c, a, fl); }
+  const easeIO = (k) => k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+
+  function toText(t, snap){
+    const { pts, gap } = textPoints();
+    const starts = snap || !parts.length ? null : parts.map(p => [p.x, p.y]);
+    const src = state === 'phrase' ? mapTo(phrasePoints(), pts.length) : (starts ? mapTo(starts, pts.length) : pts);
+    flyParts(src, pts, t, {
+      snap, size: gap,
+      delay: (sx) => 0.35 + (sx / W) * 0.7 + Math.random() * 0.5,
+      dur: () => 1.8 + Math.random() * 0.8,
+      amp: () => 30 + Math.random() * 45
+    });
+    state = 'text';
+  }
+  function toHeart(t, snap){
+    const n = parts.length;
+    const hp = heartPoints(n);
+    const sorted = mapTo(hp.pts, n);
+    const starts = parts.map(p => [p.x, p.y]);
+    const sz = hp.gap;
+    flyParts(starts, sorted, t, {
+      snap, size: sz,
+      delay: () => Math.random() * 0.5,
+      dur: () => 1.5 + Math.random() * 0.7,
+      amp: () => 15 + Math.random() * 30
+    });
+    state = 'heart';
+  }
+
+  function frame(ts){
+    if (!running) return;
+    now = ts;
+    const t = (ts - t0) / 1000;
+    const dt = Math.min(0.05, (ts - last) / 1000 || 0);
+    last = ts;
+    ctx.clearRect(0, 0, W, H);
+
+    for (const a of ambient){
+      a.y += a.vy * dt; a.r += a.vr * dt;
+      if (a.y > H + 20) Object.assign(a, newAmb(false));
+      petal(a.x + Math.sin(t * 0.9 + a.ph) * a.amp, a.y, a.s, a.r, a.c, a.a, flap(t, a.ph, 1.3));
+    }
+
+    if (state === 'phrase'){
+      if (t < tBreak) drawPhrase(t, 1);
+      else { toText(t, false); tFade = t; }
+    }
+    if (state !== 'phrase' && tFade >= 0 && t - tFade < 0.45) drawPhrase(99, 1 - (t - tFade) / 0.45);
+
+    let done = true;
+    for (const p of parts){
+      const k = clamp((t - p.start - p.d) / p.dur);
+      if (k < 1) done = false;
+      const e = easeIO(k);
+      let x = p.sx + (p.tx - p.sx) * e + Math.sin(t * 1.7 + p.ph) * p.amp * Math.sin(Math.PI * e);
+      let y = p.sy + (p.ty - p.sy) * e - Math.sin(Math.PI * e) * p.amp * 0.6;
+      const rot = p.rf + Math.sin(Math.PI * e) * (p.r0 + t * 2.2);
+      if (k >= 1 && !reduce){ x += Math.sin(t * 1.3 + p.ph) * 0.7; y += Math.cos(t * 1.1 + p.ph) * 0.5; }
+      p.x = x; p.y = y;
+      const a = state === 'text' && tFade >= 0 ? clamp((t - tFade) / 0.3) : 1;
+      const fl = k >= 1 || reduce ? p.fl : p.fl * e + flap(t, p.ph, 2.4) * (1 - e);
+      petal(x, y, p.s, rot, p.c, a, fl);
+    }
+
+    if (done && parts.length){
+      if (state === 'text' && !askTimer){ askTimer = setTimeout(showAsk, reduce ? 0 : 700); }
+      if (state === 'heart' && finale.hidden){ finale.hidden = false; finale.classList.add('in'); }
+    }
+    requestAnimationFrame(frame);
+  }
+  let tFade = -1;
+
+  async function startPetals(){
+    try { await Promise.all([document.fonts.load('900 100px Nunito', 'Я тебя люблю'), document.fonts.load('400 50px "Bad Script"', PHRASE.join(' '))]); } catch (e) {}
+    size(); layoutPhrase(); makeAmbient();
+    parts = []; tFade = -1; askTimer = 0;
+    state = 'phrase';
+    tBreak = revealEnd + (reduce ? 2.5 : 1.6);
+    mood(dockCat, 'neutral');
+    cv.classList.add('on');
+    t0 = performance.now(); last = t0;
+    if (!running){ running = true; requestAnimationFrame(frame); }
+  }
+  window.addEventListener('resize', () => {
+    if (!cv.classList.contains('on')) return;
+    const t = (performance.now() - t0) / 1000;
+    size(); makeAmbient();
+    if (state === 'phrase'){ layoutPhrase(); }
+    else if (state === 'text'){ parts = []; toText(t, true); }
+    else if (state === 'heart'){ parts = []; toText(t, true); toHeart(t, true); }
+  });
+
+  /* ---------- 4. «А ты?» ---------- */
+  const ask = $('#ask'), finale = $('#finale'), yesBtn = $('#yesBtn'), noBtn = $('#noBtn');
+  const NO = ['Рано', 'Мечтай', 'Не вип-пасс', 'Тише, тише 🤫', 'Это аванс', 'Время покажет', 'Со временем)', 'Может быть...', 'Ну ладно...'];
+  const MODALS = {
+    3: { t: 'Ты уверена?', b: 'Подумай ещё раз', ok: 'Уверена', alt: 'Подумаю' },
+    6: { t: 'Точно?', b: 'Котику кажется, что нет', ok: 'Точно', alt: 'Ладно, не точно' },
+    9: { t: 'Последний шанс', b: 'Котик уже грустит', ok: 'Ну и пусть', alt: 'Жалко котика' }
+  };
+  const ERR = { t: 'Ошибка', b: 'Кнопка «Нет» не найдена.', ok: 'Ладно' };
+  let noCount = 0, noIsYes = false, swapping = false, swapCv = null, swapT1 = 0, swapT2 = 0;
+
+  function showAsk(){ ask.hidden = false; ask.classList.add('in'); }
+  noBtn.addEventListener('click', () => {
+    if (swapping) return;
+    if (noIsYes){ accept(); return; }
+    noCount++;
+    if (noCount <= NO.length){
+      noBtn.textContent = NO[noCount - 1];
+      yesBtn.style.fontSize = Math.min(1.45, 1 + noCount * 0.05) + 'em';
+    }
+    if (noCount >= 3) mood(dockCat, 'sad');
+    if (MODALS[noCount]) openModal(MODALS[noCount]);
+    else if (noCount === NO.length + 1){
+      openModal(ERR, swapNo);
+    }
+  });
+  function swapNo(){
+    const becomeYes = () => {
+      noBtn.textContent = 'Я тебя тоже люблю';
+      noBtn.classList.remove('btn-no', 'going'); noBtn.classList.add('btn-yes');
+    };
+    if (reduce){ becomeYes(); noIsYes = true; return; }
+    swapping = true;
+    const r = noBtn.getBoundingClientRect();
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const oc = document.createElement('canvas');
+    oc.className = 'swap-canvas';
+    oc.width = Math.round(window.innerWidth * dpr); oc.height = Math.round(window.innerHeight * dpr);
+    document.body.appendChild(oc); swapCv = oc;
+    const o = oc.getContext('2d'); o.setTransform(dpr, 0, 0, dpr, 0, 0);
+    /* each petal: leaves the old button, drifts out to an apex, then settles onto the new one */
+    const ps = [];
+    for (let i = 0; i < 36; i++){
+      const sx = r.left + Math.random() * r.width, sy = r.top + Math.random() * r.height;
+      const ang = Math.random() * 6.283, far = 46 + Math.random() * 84;
+      ps.push({ sx, sy, ax: sx + Math.cos(ang) * far, ay: sy + Math.sin(ang) * far * 0.8 - 26,
+        ex: r.left + r.width * (0.08 + Math.random() * 0.84), ey: r.top + r.height * (0.2 + Math.random() * 0.6),
+        d: Math.random() * 0.14, s: 9 + Math.random() * 7, r0: Math.random() * 6.283, vr: (Math.random() - 0.5) * 7,
+        ph: Math.random() * 6.283, c: pickC() });
+    }
+    const DUR = 1.35, start = performance.now();
+    noBtn.classList.add('going');
+    swapT1 = setTimeout(() => { becomeYes(); noBtn.classList.add('coming'); }, 450);
+    swapT2 = setTimeout(() => { noBtn.classList.remove('coming'); swapping = false; noIsYes = true; }, 1800);
+    (function tick(ts){
+      if (swapCv !== oc) return;
+      const t = (ts - start) / 1000;
+      o.clearRect(0, 0, window.innerWidth, window.innerHeight);
+      for (const p of ps){
+        const k = clamp((t - p.d) / (DUR - 0.14));
+        if (k <= 0 || k >= 1) continue;
+        let x, y;
+        if (k < 0.42){ const e = 1 - Math.pow(1 - k / 0.42, 3); x = p.sx + (p.ax - p.sx) * e; y = p.sy + (p.ay - p.sy) * e; }
+        else { const e = easeIO((k - 0.42) / 0.58); x = p.ax + (p.ex - p.ax) * e; y = p.ay + (p.ey - p.ay) * e; }
+        const a = Math.min(1, k / 0.08) * (k > 0.8 ? (1 - k) / 0.2 : 1);
+        drawPetal(o, x, y, p.s, p.r0 + p.vr * t, p.c, a, flap(t, p.ph, 5));
+      }
+      if (t < DUR + 0.1) requestAnimationFrame(tick);
+      else { oc.remove(); swapCv = null; }
+    })(start);
+  }
+  yesBtn.addEventListener('click', accept);
+  function accept(){
+    ask.hidden = true;
+    mood(dockCat, 'happy');
+    toHeart((performance.now() - t0) / 1000, false);
+  }
+
+  /* ---------- Окно ---------- */
+  const modal = $('#modal'), mTitle = $('#mTitle'), mBody = $('#mBody'), mOk = $('#mOk'), mAlt = $('#mAlt');
+  let onClose = null;
+  function openModal(m, cb){
+    mTitle.textContent = m.t; mBody.textContent = m.b; mOk.textContent = m.ok;
+    if (m.alt){ mAlt.textContent = m.alt; mAlt.hidden = false; } else { mAlt.hidden = true; }
+    onClose = cb || null;
+    modal.hidden = false;
+    mOk.focus({ preventScroll: true });
+  }
+  function closeModal(){
+    modal.hidden = true;
+    const cb = onClose; onClose = null;
+    if (cb) cb();
+    noBtn.focus({ preventScroll: true });
+  }
+  mOk.addEventListener('click', closeModal);
+  mAlt.addEventListener('click', closeModal);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.hidden) closeModal(); });
+
+  /* ---------- Заново ---------- */
+  $('#again').addEventListener('click', () => {
+    running = false; gRun = false; parts = []; ambient = []; state = 'idle'; tFade = -1;
+    clearTimeout(askTimer); askTimer = 0;
+    clearTimeout(catchHintT); clearTimeout(catchDoneT);
+    ctx.clearRect(0, 0, W, H); cv.classList.remove('on');
+    pets = 0; mood(gateCat, 'grumpy'); gateSay.textContent = GATE[0];
+    goBtn.hidden = true; armGateHint();
+    qi = 0; qIntro.hidden = false; qCard.hidden = true;
+    quizSay.textContent = 'Но сначала экзамен'; quizSay.style.visibility = ''; mood(quizCat, 'neutral');
+    noCount = 0; noIsYes = false; swapping = false;
+    clearTimeout(swapT1); clearTimeout(swapT2);
+    if (swapCv){ swapCv.remove(); swapCv = null; }
+    noBtn.classList.remove('going', 'coming');
+    noBtn.textContent = 'Нет'; noBtn.classList.add('btn-no'); noBtn.classList.remove('btn-yes');
+    yesBtn.style.fontSize = '';
+    ask.hidden = true; ask.classList.remove('in');
+    finale.hidden = true; finale.classList.remove('in');
+    show('gate');
+  });
+})();
+</script>
+</body>
+</html>
